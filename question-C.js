@@ -1,73 +1,101 @@
+class TreeTraversal {
+  constructor(tree) {
+    this.tree = tree;
+  }
 
-class Node {
-	constructor(val) {
-		this.key = val;
-		this.left = null;
-		this.right = null;
-	}
+  traverse() {
+    throw new Error('Traversal method not implemented.');
+  }
 }
 
-	var root = null;
+class PreorderTraversal extends TreeTraversal {
+  traverse() {
+    const result = [];
+    this.preorder(1, result);
+    return result;
+  }
 
-	function printPostorder(node) {
-		if (node == null)
-			return;
+  preorder(node, result) {
+    result.push(node);
 
-		// first recur on left subtree
-		printPostorder(node.left);
+    for (const child of this.tree[node]) {
+      this.preorder(child, result);
+    }
+  }
+}
 
-		// then recur on right subtree
-		printPostorder(node.right);
+class PostorderTraversal extends TreeTraversal {
+  traverse() {
+    const result = [];
+    this.postorder(1, result);
+    return result;
+  }
 
-		// now deal with the node
-		document.write(node.key + " ");
-	}
+  postorder(node, result) {
+    for (const child of this.tree[node]) {
+      this.postorder(child, result);
+    }
 
-	/* Given a binary tree, print its nodes in inorder */
-	function printInorder(node) {
-		if (node == null)
-			return;
+    result.push(node);
+  }
+}
 
-		/* first recur on left child */
-		printInorder(node.left);
+class InorderTraversal extends TreeTraversal {
+  traverse() {
+    const result = [];
+    this.inorder(1, result);
+    return result;
+  }
 
-		/* then print the data of node */
-		document.write(node.key + " ");
+  inorder(node, result) {
+    if (this.tree[node].length >= 1) {
+      this.inorder(this.tree[node][0], result);
+    }
 
-		/* now recur on right child */
-		printInorder(node.right);
-	}
+    result.push(node);
 
-	/* Given a binary tree, print its nodes in preorder */
-	function printPreorder(node) {
-		if (node == null)
-			return;
+    if (this.tree[node].length === 2) {
+      this.inorder(this.tree[node][1], result);
+    }
+  }
+}
 
-		/* first print data of node */
-		document.write(node.key + " ");
+class TraversalFactory {
+  static createTraversal(traversalType, tree) {
+    switch (traversalType) {
+      case 'preorder':
+        return new PreorderTraversal(tree);
+      case 'postorder':
+        return new PostorderTraversal(tree);
+      case 'inorder':
+        return new InorderTraversal(tree);
+      default:
+        throw new Error('Invalid traversal type.');
+    }
+  }
+}
 
-		/* then recur on left subtree */
-		printPreorder(node.left);
+// Example tree
+const treeNode = {
+  1: [2, 3],
+  2: [4, 5],
+  3: [],
+  4: [],
+  5: [6, 7],
+  6: [],
+  7: [8],
+  8: [],
+};
 
-		/* now recur on right subtree */
-		printPreorder(node.right);
-		
-	}
+// Test the different traversal orders
+const preorderTraversal = TraversalFactory.createTraversal('preorder', treeNode);
+const preorderResult = preorderTraversal.traverse();
+console.log('Pre-order Output:', preorderResult);
 
+const postorderTraversal = TraversalFactory.createTraversal('postorder', treeNode);
+const postorderResult = postorderTraversal.traverse();
+console.log('Post-order Output:', postorderResult);
 
-
-	// Driver method
-	root = new Node(1);
-	root.left = new Node(2);
-	root.right = new Node(3);
-	root.left.left = new Node(4);
-	root.left.right = new Node(5);
-
-	document.write("Preorder traversal of binary tree is <br/>");
-	printPreorder(root);
-
-	document.write("<br/>Inorder traversal of binary tree is <br/>");
-	printInorder(root);
-
-	document.write("<br/>Postorder traversal of binary tree is <br/>");
-	printPostorder(root);
+const inorderTraversal = TraversalFactory.createTraversal('inorder', treeNode);
+const inorderResult = inorderTraversal.traverse();
+console.log('In-order Output:', inorderResult);
